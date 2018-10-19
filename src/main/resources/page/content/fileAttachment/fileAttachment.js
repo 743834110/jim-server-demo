@@ -12,12 +12,18 @@ var file = null; //当前读取的文件对象
 var enableRead = true;//标识是否可以读取文件
 var total = 0;        //记录当前文件总字节数
 var startTime = null; //标识开始上传时间
+var slice = 1; //分片数量
+var index = 1; //以1开始，当前分发分片的索引
 var onchange = function (event) {
 
     //获取文件对象
     file = event.target.files[0];
     total = file.size;
     console.info(file);
+    // 获取改文件被分片后的数量
+    slice = Math.ceil(file.size * 1.0 / step);
+    index = 1;
+    console.log("应当被分片的数量为：" + slice);
     if (ws == null) {
         if (window.confirm('建立与服务器链接失败,确定重试链接吗')) {
             createSocket(function () {
@@ -36,12 +42,12 @@ function bindReader() {
     reader = new FileReader();
     //读取一段成功
     reader.onload = function (e) {
+        console.log(e)
         console.info('读取总数：' + e.loaded);
         if (enableRead == false)
             return false;
         //根据当前缓冲区来控制客户端读取速度
         var webSocket = ws;
-        debugger
         if (ws.bufferedAmount > step * 10) {
             setTimeout(function () {
                 //继续读取,等待三毫秒再读取
@@ -56,6 +62,7 @@ function bindReader() {
     reader.onloadend = function (ev) {
 
     };
+
     //开始读取
     readBlob();
 }
@@ -87,14 +94,17 @@ function loadSuccess(loaded) {
         "content": blob,
         "extras": {
             "file": {
+
                 "name": file.name,
                 "size": file.size,
-                "currentLoaded": cuLoaded
+                "index": index,
+                "slice": slice,
+                "currentLoading": loaded
             }
         }
     });
-    console.log(message)
     ws.send(message);
+    index ++;
     //如果没有读完，继续
     cuLoaded += loaded;
     if (cuLoaded < total) {

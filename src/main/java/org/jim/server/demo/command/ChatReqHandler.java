@@ -9,11 +9,12 @@ import org.jim.common.packets.Command;
 import org.jim.common.packets.RespBody;
 import org.jim.common.utils.ChatKit;
 import org.jim.server.command.handler.processor.chat.MsgQueueRunnable;
+import org.jim.server.demo.packet.MessageType;
 import org.jim.server.demo.service.chat.IChatService;
 import org.jim.server.demo.service.chat.impl.DefaultFileChatServiceImpl;
 import org.jim.server.demo.service.chat.impl.TextChatServiceImpl;
 import org.tio.core.ChannelContext;
-
+import static org.jim.server.demo.packet.MessageType.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,8 +35,8 @@ public class ChatReqHandler extends org.jim.server.command.handler.ChatReqHandle
      */
     private Map<Integer, IChatService> chatServiceMap = new HashMap<Integer, IChatService>() {
         {
-            this.put(0, new TextChatServiceImpl());
-            this.put(-1, new DefaultFileChatServiceImpl());
+            this.put(TEXT.getNumber(), new TextChatServiceImpl());
+            this.put(OTHERS.getNumber(), new DefaultFileChatServiceImpl());
         }
 
         // 当找不到时返回默认file处理服务类
@@ -43,7 +44,7 @@ public class ChatReqHandler extends org.jim.server.command.handler.ChatReqHandle
         public IChatService get(Object key) {
 
             IChatService chatService =  super.get(key);
-            return chatService == null? super.get(-1): chatService;
+            return chatService == null? super.get(OTHERS.getNumber()): chatService;
         }
     };
 
@@ -59,14 +60,15 @@ public class ChatReqHandler extends org.jim.server.command.handler.ChatReqHandle
         }
 
         // 调用服务层方法，返回修改后的chatBody对象
-        Integer chatType = chatBody.getChatType();
-        IChatService chatService = chatServiceMap.get(chatType);
+        Integer messageType = chatBody.getMsgType();
+        IChatService chatService = chatServiceMap.get(messageType);
         if (!chatService.validatePackage(chatBody))
             // 聊天数据格式不正确
             return ChatKit.dataInCorrectRespPacket(channelContext);
         chatBody = chatService.handler(chatBody, channelContext);
 
         // 异步调用业务处理消息接口:持久化
+        Integer chatType = chatBody.getChatType();
         if(ChatType.forNumber(chatType) != null){
             MsgQueueRunnable msgQueueRunnable = (MsgQueueRunnable)channelContext.getAttribute(Const.CHAT_QUEUE);
             msgQueueRunnable.addMsg(packet);
@@ -77,7 +79,7 @@ public class ChatReqHandler extends org.jim.server.command.handler.ChatReqHandle
         // 按照正常方式进行处理
         ImPacket chatPacket = new ImPacket(Command.COMMAND_CHAT_REQ,new RespBody(Command.COMMAND_CHAT_REQ,chatBody).toByte());
         chatPacket.setSynSeq(packet.getSynSeq());//设置同步序列号;
-        if(ChatType.CHAT_TYPE_PRIVATE.getNumber() == chatBody.getChatType()){//私聊
+        if(ChatType.CHAT_TYPE_PRIVATE.getNumber() == chatType){//私聊
             String toId = chatBody.getTo();
             if(ChatKit.isOnline(toId,imConfig)){
                 ImAio.sendToUser(toId, chatPacket);
@@ -85,7 +87,7 @@ public class ChatReqHandler extends org.jim.server.command.handler.ChatReqHandle
             }else{
                 return ChatKit.offlineRespPacket(channelContext);//用户不在线响应包
             }
-        }else if(ChatType.CHAT_TYPE_PUBLIC.getNumber() == chatBody.getChatType()){//群聊
+        }else if(ChatType.CHAT_TYPE_PUBLIC.getNumber() == chatType){//群聊
             String group_id = chatBody.getGroup_id();
             ImAio.sendToGroup(group_id, chatPacket);
             return ChatKit.sendSuccessRespPacket(channelContext);//发送成功响应包
