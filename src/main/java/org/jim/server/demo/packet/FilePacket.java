@@ -1,6 +1,10 @@
 package org.jim.server.demo.packet;
 
+import sun.misc.BASE64Decoder;
+
+import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Base64;
 
 /**
  * 分片文件包
@@ -15,7 +19,7 @@ public class FilePacket{
     /**
      * 文件内容
      */
-    private String content;
+    private byte[] content;
 
 
     /**
@@ -33,10 +37,6 @@ public class FilePacket{
      */
     private Integer currentLoading;
 
-    /**
-     * 字节缓冲区
-     */
-    private ByteBuffer byteBuffer;
 
     /**
      * 文件当前的分片索引
@@ -61,7 +61,6 @@ public class FilePacket{
         this.name = name;
         this.size = size;
         this.currentLoading = currentLoading;
-        this.byteBuffer = ByteBuffer.allocateDirect(size);
     }
 
 
@@ -73,12 +72,13 @@ public class FilePacket{
         this.sessionId = sessionId;
     }
 
-    public String getContent() {
+    public byte[] getContent() {
         return content;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setContent(String content) throws IOException {
+        BASE64Decoder base64Decoder = new BASE64Decoder();
+        this.content = base64Decoder.decodeBuffer(content.replace("data:;base64,", ""));
     }
 
     public String getName() {
@@ -97,19 +97,14 @@ public class FilePacket{
         this.size = size;
     }
 
-    public long getCurrentLoading() {
+    public Integer getCurrentLoading() {
         return currentLoading;
     }
 
     public void setCurrentLoading(Integer currentLoading) {
         this.currentLoading = currentLoading;
-        if (this.byteBuffer == null)
-            this.byteBuffer = ByteBuffer.allocateDirect(currentLoading);
     }
 
-    public ByteBuffer getByteBuffer() {
-        return byteBuffer;
-    }
 
 
     public Integer getIndex() {
@@ -128,12 +123,27 @@ public class FilePacket{
         this.slice = slice;
     }
 
-    /**
-     * 判断改文件分片是否在所属文件中的最后一个分片
-     * @return 返回true表示该文件分片属于所属文件中的最后一个分片
-     */
-    public boolean isLastOne() {
 
+    /**
+     * 判断此次文件分片，
+     * 对于文件系统来说是否是属于新的文件分片的
+     * @return
+     */
+    public boolean isTheNewOne() {
+        // 文件分片数量为1时，则表示该文件分片是属于新来的文件的
+        if (this.slice == 1)
+            return true;
+        // 文件分片数量不唯一时，当到达的文件分片索引为1时，则表示这是新来的属于另外的一个的文件分片
+        else {
+            return this.index == 1;
+        }
+    }
+
+    /**
+     * 判断该报文是否是某文件的最后分片
+     * @return
+     */
+    public boolean isTheLastOne() {
         return this.index.equals(this.slice);
     }
 }

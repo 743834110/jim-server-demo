@@ -74,7 +74,7 @@ function bindReader() {
 function readBlob() {
     //指定开始位置和结束位置读取文件
     var blob = file.slice(cuLoaded, cuLoaded + step);
-    reader.readAsBinaryString(blob);
+    reader.readAsDataURL(blob);
 }
 
 //读取文件成功处理
@@ -135,7 +135,7 @@ var ws = null;
 //创建和服务器的WebSocket 链接
 function createSocket(onSuccess) {
     var ip = "localhost";
-    var port = "8888";
+    var port = "8880";
     ws = new WebSocket("wss:"+ip+":"+port+"?username="+"18487545454"+"&password="+"fdfdfdf");
     ws.onopen = function () {
         console.log('connected成功');

@@ -3,6 +3,12 @@ package org.jim.server.demo.util;
 import org.jim.server.demo.packet.FilePacket;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.channels.WritableByteChannel;
 
 /**
  * 文件持久化工具类
@@ -27,6 +33,7 @@ public class PersistentKit {
     }
     private PersistentKit() {}
 
+
     /**
      * 持久化文件
      * 注意不用用户会话之间的文件存储问题
@@ -34,26 +41,30 @@ public class PersistentKit {
      * <i>报文可能会乱序到达</i>
      *
      * @param filePacket 文件包
+     * @return 存在与该系统中的文件对象
      */
-    public static void persistFile(FilePacket filePacket) {
+    public static File persistFile(FilePacket filePacket) throws IOException {
 
-        String subDir = filePacket.getSessionId() + "/" + filePacket.getName();
-        File file = new File(UPLOAD_FILE, subDir);
-        // 判断(该文件是否存在 + 文件的最后一个分片是否已经到达)
-        boolean exists = file.exists();
-        boolean lastOne = filePacket.isLastOne();
-        // 存在,但不是最后一个
-        if (exists && !lastOne) {
-
+        File file = MatchingFileGenerator.generateNewFile(filePacket, UPLOAD_FILE);
+        file.createNewFile();
+        FileChannel fileChannel = new FileOutputStream(file, true).getChannel();
+        ByteBuffer buffer = ByteBuffer.allocateDirect(filePacket.getCurrentLoading());
+        buffer.put(filePacket.getContent());
+        buffer.flip();
+        while (buffer.hasRemaining()) {
+            fileChannel.write(buffer);
         }
-        // 存在,最后一个
-        else if (exists) {
-
-        }
-
+        buffer.clear();
+        fileChannel.close();
+        return file;
     }
 
 
-
+    public static void main(String[] args) throws IOException {
+        FilePacket filePacket = new FilePacket();
+        filePacket.setName("ee(4).txt");
+        filePacket.setSessionId("4845f5df545f5d5");
+        PersistentKit.persistFile(filePacket);
+    }
 
 }

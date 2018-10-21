@@ -29,7 +29,7 @@ public class ChatReqHandler extends org.jim.server.command.handler.ChatReqHandle
 
     /**
      * 聊天类型到聊天服务类的映射类
-     * 0:text、1:image、2:voice、3:vedio、4:music、5:news、-1: others
+     * 0:text、1:image、2:voice、3:video、4:music、5:news、-1: others
      * 0 -> TextChatServiceImpl
      * -1 -> DefaultChatServiceImpl
      */
@@ -65,7 +65,7 @@ public class ChatReqHandler extends org.jim.server.command.handler.ChatReqHandle
         if (!chatService.validatePackage(chatBody))
             // 聊天数据格式不正确
             return ChatKit.dataInCorrectRespPacket(channelContext);
-        chatBody = chatService.handler(chatBody, channelContext);
+        chatBody = chatService.handler(this.imConfig, chatBody, channelContext);
 
         // 异步调用业务处理消息接口:持久化
         Integer chatType = chatBody.getChatType();
@@ -75,23 +75,6 @@ public class ChatReqHandler extends org.jim.server.command.handler.ChatReqHandle
             msgQueueRunnable.getExecutor().execute(msgQueueRunnable);
         }
 
-
-        // 按照正常方式进行处理
-        ImPacket chatPacket = new ImPacket(Command.COMMAND_CHAT_REQ,new RespBody(Command.COMMAND_CHAT_REQ,chatBody).toByte());
-        chatPacket.setSynSeq(packet.getSynSeq());//设置同步序列号;
-        if(ChatType.CHAT_TYPE_PRIVATE.getNumber() == chatType){//私聊
-            String toId = chatBody.getTo();
-            if(ChatKit.isOnline(toId,imConfig)){
-                ImAio.sendToUser(toId, chatPacket);
-                return ChatKit.sendSuccessRespPacket(channelContext);//发送成功响应包
-            }else{
-                return ChatKit.offlineRespPacket(channelContext);//用户不在线响应包
-            }
-        }else if(ChatType.CHAT_TYPE_PUBLIC.getNumber() == chatType){//群聊
-            String group_id = chatBody.getGroup_id();
-            ImAio.sendToGroup(group_id, chatPacket);
-            return ChatKit.sendSuccessRespPacket(channelContext);//发送成功响应包
-        }
-        return null;
+        return chatService.send(packet.getSynSeq(), chatBody, imConfig, channelContext);
     }
 }
