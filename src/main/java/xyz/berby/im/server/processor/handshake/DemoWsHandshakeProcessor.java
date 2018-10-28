@@ -1,8 +1,9 @@
 /**
  * 
  */
-package xyz.berby.im.server.processor;
+package xyz.berby.im.server.processor.handshake;
 
+import com.jfinal.kit.PropKit;
 import org.jim.common.ImAio;
 import org.jim.common.ImPacket;
 import org.jim.common.ImStatus;
@@ -26,27 +27,18 @@ import org.tio.core.ChannelContext;
 import java.util.Date;
 
 /**
- * @author WChao
- *
+ * @author litianfeng
+ * Created on 2018/10/27
+ * 握手成功后
+ * 发送密钥到客户端当中
+ * 以完成登录信息加密操作
  */
 public class DemoWsHandshakeProcessor extends WsHandshakeProcessor{
 
+
 	@Override
 	public void onAfterHandshaked(ImPacket packet, ChannelContext channelContext) throws Exception {
-		LoginReqHandler loginHandler = (LoginReqHandler)CommandManager.getCommand(Command.COMMAND_LOGIN_REQ);
-		HttpRequest request = (HttpRequest)packet;
-		String username = request.getParams().get("username") == null ? null : (String)request.getParams().get("username")[0];
-		String password = request.getParams().get("password") == null ? null : (String)request.getParams().get("password")[0];
-		String token = request.getParams().get("token") == null ? null : (String)request.getParams().get("token")[0];
-		LoginReqBody loginBody = new LoginReqBody(username,password,token);
-		byte[] loginBytes = JsonKit.toJsonBytes(loginBody);
-		request.setBody(loginBytes);
-		request.setBodyString(new String(loginBytes,HttpConst.CHARSET_NAME));
-		ImPacket loginRespPacket = loginHandler.handler(request, channelContext);
-		if(loginRespPacket != null){
-			// 发送消息
-			ImAio.send(channelContext, loginRespPacket);
-		}
+
 	}
 
 }

@@ -20,6 +20,8 @@ import org.jim.server.command.CommandManager;
 import org.jim.server.command.handler.JoinGroupReqHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.tio.core.ChannelContext;
 import org.jim.common.http.HttpConst;
 import org.jim.common.packets.Group;
@@ -32,6 +34,8 @@ import org.jim.server.command.handler.processor.login.LoginProcessorIntf;
 
 import cn.hutool.core.util.RandomUtil;
 
+import javax.annotation.PostConstruct;
+
 /**
  * @author WChao
  *
@@ -39,6 +43,7 @@ import cn.hutool.core.util.RandomUtil;
 public class LoginServiceProcessor implements LoginProcessorIntf{
 
 	private Logger logger = LoggerFactory.getLogger(LoginServiceProcessor.class);
+
 
 	public static final Map<String, User> tokenMap = new HashMap<>();
 

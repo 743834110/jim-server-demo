@@ -1,27 +1,22 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>xyz.berby.im</groupId>
     <artifactId>server</artifactId>
     <packaging>jar</packaging>
     <name>server</name>
-    <version>0.1.SNATSHOT</version>
+    <version>1.0-SNAPSHOT</version>
+
+    <parent>
+        <groupId>xyz.berby.im</groupId>
+        <artifactId>im-parent-spring-boot-starter</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
 
     <properties>
         <jdk.version>1.8</jdk.version>
         <jim-version>2.3.0.v20180830-RELEASE</jim-version>
-        <spring.boot.version>2.0.6.RELEASE</spring.boot.version>
+        <skip.assembly>true</skip.assembly>
     </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-autoconfigure</artifactId>
-                <version>${spring.boot.version}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <dependencies>
         <!--jim依赖-->
@@ -31,18 +26,25 @@
             <version>${jim-version}</version>
         </dependency>
 
-        <!--spring-boot-starter依赖-->
+        <!--数据库依赖-->
+        <dependency>
+            <groupId>xyz.berby.im</groupId>
+            <artifactId>im-db-spring-boot-starter</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!--SPI组件发现-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>
         </dependency>
 
-        <!--spring配置导航依赖-->
+        <!--junit-->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-configuration-processor</artifactId>
-            <version>${spring.boot.version}</version>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
         </dependency>
+
     </dependencies>
     <build>
         <plugins>
@@ -71,6 +73,7 @@
                             <mainClass>xyz.berby.im.server.ImServerStart</mainClass>
                         </manifest>
                     </archive>
+                    <skipAssembly>${skip.assembly}</skipAssembly>
                 </configuration>
                 <executions>
                     <execution>

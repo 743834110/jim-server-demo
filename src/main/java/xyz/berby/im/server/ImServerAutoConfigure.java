@@ -6,66 +6,63 @@ package xyz.berby.im.server;
 import org.apache.commons.lang3.StringUtils;
 import org.jim.common.Const;
 import org.jim.common.ImConfig;
-import org.jim.common.config.PropertyImConfigBuilder;
 import org.jim.common.packets.Command;
 import org.jim.server.ImServerStarter;
 import org.jim.server.command.CommandManager;
-import org.jim.server.command.handler.HandshakeReqHandler;
-import org.jim.server.command.handler.LoginReqHandler;
+import org.jim.server.command.handler.processor.login.LoginProcessorIntf;
+import org.jim.server.handler.ImServerAioHandler;
+import org.jim.server.listener.ImServerAioListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.ImportResource;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.core.env.Environment;
-import org.springframework.ui.context.support.UiApplicationContextUtils;
-import xyz.berby.im.server.processor.DemoWsHandshakeProcessor;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.jdbc.core.JdbcTemplate;
+import xyz.berby.im.ImDataBaseAutoConfigure;
+import xyz.berby.im.server.config.PropertyImConfigBuilder;
 import xyz.berby.im.server.listener.ImDemoGroupListener;
-import xyz.berby.im.server.service.LoginServiceProcessor;
-import org.jim.server.listener.ImServerAioListener;
-import org.tio.core.ChannelContext;
 import org.tio.core.ssl.SslConfig;
 import com.jfinal.kit.PropKit;
+import xyz.berby.im.server.service.LoginServiceProcessor;
 
-import javax.annotation.PostConstruct;
-import java.util.Map;
+import java.io.IOException;
 
 /**
- * IM服务端DEMO演示启动类;
+ * IM服务端启动类;
  * @author WChao
  * @date 2018-04-05 23:50:25
  */
 
-@Configuration
-@ImportResource("classpath:spring-im.xml")
-public class ImServerStart {
+@EnableAutoConfiguration(exclude = ImServerAutoConfigure.class)
+public class ImServerAutoConfigure {
 
-
-
-
-	public static void main(String[] args)throws Exception{
-
-		ApplicationContext applicationContext = new AnnotationConfigApplicationContext(ImServerStart.class);
-
-
+	@Bean
+	public ImConfig imConfig() throws Exception {
 		ImConfig imConfig = new PropertyImConfigBuilder("jim.properties")
 				.build();
-		imConfig.setIsSSL("on");
-
 		initSsl(imConfig);
 
 		//　设置群组监听器，非必须，根据需要自己选择性实现;
 		imConfig.setImGroupListener(new ImDemoGroupListener());
-		ImServerStarter imServerStarter = new ImServerStarter(imConfig, new ImServerAioListener(imConfig) {
-			@Override
-			public void onAfterConnected(ChannelContext channelContext, boolean isConnected, boolean isReconnect) {
-			}
-		});
-
+		ImServerStarter imServerStarter = new ImServerStarter(imConfig, new ImServerAioListener(imConfig));
 		imServerStarter.start();
 
+		return imConfig;
+	}
+
+	/**
+	 * 登录细节处理类
+	 * @return LoginProcessorIntf
+	 */
+	@Bean
+	public LoginProcessorIntf loginServiceProcessor() {
+		LoginProcessorIntf processorIntf = new LoginServiceProcessor();
+		CommandManager.getCommand(Command.COMMAND_LOGIN_REQ).addProcessor(processorIntf);
+		return processorIntf;
 	}
 
 	/**
@@ -85,6 +82,14 @@ public class ImServerStart {
 				imConfig.setSslConfig(sslConfig);
 			}
 		}
+	}
+
+
+	public static void main(String[] args)throws Exception{
+
+		long first = System.currentTimeMillis();
+		ApplicationContext applicationContext = new AnnotationConfigApplicationContext(ImServerAutoConfigure.class);
+		System.out.println("加载spring容器耗时：" + (System.currentTimeMillis() - first) + "ms");
 	}
 
 
