@@ -5,6 +5,7 @@ import cn.hutool.crypto.SecureUtil;
 import cn.hutool.crypto.asymmetric.AsymmetricAlgorithm;
 import cn.hutool.crypto.asymmetric.AsymmetricCrypto;
 import cn.hutool.crypto.asymmetric.KeyType;
+import cn.hutool.crypto.asymmetric.RSA;
 import cn.hutool.crypto.symmetric.AES;
 import com.jfinal.kit.AesKit;
 import com.jfinal.kit.Base64Kit;
@@ -32,5 +33,11 @@ public class CryptoUtilTest {
     public void testCrypto() throws InvalidKeyException, IOException {
         AsymmetricCrypto crypto = SecureUtil.rsa(this.privateKey, null);
         System.out.println(crypto.encryptBase64("a", KeyType.PrivateKey));
+
+        long a = System.currentTimeMillis();
+
+        RSA rsa = SecureUtil.rsa();
+        rsa.encryptStr("{system:ddd}", KeyType.PublicKey);
+        System.out.println(System.currentTimeMillis() - a);
     }
 }

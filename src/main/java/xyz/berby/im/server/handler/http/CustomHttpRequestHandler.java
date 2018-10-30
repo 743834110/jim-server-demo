@@ -342,6 +342,10 @@ public class CustomHttpRequestHandler implements IHttpRequestHandler {
 
         if (cookie == null) {
             String domain = request.getHeader(HttpConst.RequestHeaderKey.Host);
+            String[] temp = domain.split(":");
+            if (temp.length > 1)
+                domain = temp[0];
+
             String name = httpConfig.getSessionCookieName();
             long maxAge = httpConfig.getSessionTimeout();
             //			maxAge = Integer.MAX_VALUE; //把过期时间掌握在服务器端
