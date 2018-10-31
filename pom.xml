@@ -24,6 +24,12 @@
             <groupId>org.j-im</groupId>
             <artifactId>jim-server</artifactId>
             <version>${jim-version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-simple</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!--数据库依赖-->

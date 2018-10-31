@@ -59,11 +59,15 @@ public class ImServerAutoConfigure {
 	 * @return LoginProcessorIntf
 	 */
 	@Bean
+	@DependsOn("imConfig")
 	public LoginProcessorIntf loginServiceProcessor() {
 		LoginProcessorIntf processorIntf = new LoginServiceProcessor();
 		CommandManager.getCommand(Command.COMMAND_LOGIN_REQ).addProcessor(processorIntf);
 		return processorIntf;
 	}
+
+
+
 
 	/**
 	 * 开启SSL
@@ -90,6 +94,7 @@ public class ImServerAutoConfigure {
 		long first = System.currentTimeMillis();
 		ApplicationContext applicationContext = new AnnotationConfigApplicationContext(ImServerAutoConfigure.class);
 		System.out.println("加载spring容器耗时：" + (System.currentTimeMillis() - first) + "ms");
+
 	}
 
 

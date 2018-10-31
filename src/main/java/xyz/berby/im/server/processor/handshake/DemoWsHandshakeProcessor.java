@@ -3,6 +3,7 @@
  */
 package xyz.berby.im.server.processor.handshake;
 
+import cn.hutool.crypto.SecureUtil;
 import com.jfinal.kit.PropKit;
 import org.jim.common.ImAio;
 import org.jim.common.ImPacket;
@@ -38,7 +39,6 @@ public class DemoWsHandshakeProcessor extends WsHandshakeProcessor{
 
 	@Override
 	public void onAfterHandshaked(ImPacket packet, ChannelContext channelContext) throws Exception {
-
 	}
 
 }
