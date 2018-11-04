@@ -11,7 +11,7 @@ import org.jim.common.packets.RespBody;
 import org.jim.common.utils.ChatKit;
 import xyz.berby.im.server.packet.FilePacket;
 import xyz.berby.im.server.service.chat.AbstractChatService;
-import xyz.berby.im.server.util.CustomChatKit;
+import xyz.berby.im.server.util.CustomKit;
 import xyz.berby.im.server.util.PersistentKit;
 import org.tio.core.ChannelContext;
 
@@ -82,22 +82,22 @@ public class DefaultFileChatServiceImpl extends AbstractChatService{
                 String toId = chatBody.getTo();
                 if(ChatKit.isOnline(toId,imConfig)){
                     ImAio.sendToUser(toId, chatPacket);
-                    return CustomChatKit.sendSuccessRespPacket(channelContext, chatBody);//发送成功响应包
+                    return CustomKit.sendChatSuccessRespPacket(channelContext, chatBody);//发送成功响应包
                 }else{
                     // 暂定, 为了看到结果
-                    return CustomChatKit.sendSuccessRespPacket(channelContext, chatBody);//用户不在线响应包
+                    return CustomKit.sendChatSuccessRespPacket(channelContext, chatBody);//用户不在线响应包
                 }
             }else if(ChatType.CHAT_TYPE_PUBLIC.getNumber() == chatType){//群聊
                 String group_id = chatBody.getGroup_id();
                 ImAio.sendToGroup(group_id, chatPacket);
-                return CustomChatKit.sendSuccessRespPacket(channelContext, channelContext);//发送成功响应包
+                return CustomKit.sendChatSuccessRespPacket(channelContext, channelContext);//发送成功响应包
             }
             // 未知聊天类型，返回null
             return null;
         }
         // 并非最后文件分片,进行进度通知
         else {
-            return CustomChatKit.sendSuccessRespPacket(channelContext, chatBody);
+            return CustomKit.sendChatSuccessRespPacket(channelContext, chatBody);
         }
 
     }

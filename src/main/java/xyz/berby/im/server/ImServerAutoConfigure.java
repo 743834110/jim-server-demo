@@ -3,10 +3,13 @@
  */
 package xyz.berby.im.server;
 
+import cn.hutool.core.util.ReflectUtil;
+import com.jfinal.kit.JsonKit;
 import org.apache.commons.lang3.StringUtils;
 import org.jim.common.Const;
 import org.jim.common.ImConfig;
 import org.jim.common.packets.Command;
+import org.jim.common.packets.Message;
 import org.jim.server.ImServerStarter;
 import org.jim.server.command.CommandManager;
 import org.jim.server.command.handler.processor.login.LoginProcessorIntf;
@@ -27,6 +30,7 @@ import xyz.berby.im.server.config.PropertyImConfigBuilder;
 import xyz.berby.im.server.listener.ImDemoGroupListener;
 import org.tio.core.ssl.SslConfig;
 import com.jfinal.kit.PropKit;
+import xyz.berby.im.server.processor.handshake.CustomWsHandshakeProcessor;
 import xyz.berby.im.server.service.LoginServiceProcessor;
 
 import java.io.IOException;
@@ -66,7 +70,12 @@ public class ImServerAutoConfigure {
 		return processorIntf;
 	}
 
-
+	@Bean
+	public CustomWsHandshakeProcessor customWsHandshakeProcessor() {
+		CustomWsHandshakeProcessor processor = new CustomWsHandshakeProcessor();
+		CommandManager.getCommand(Command.COMMAND_HANDSHAKE_REQ).addProcessor(processor);
+		return  processor;
+	}
 
 
 	/**
@@ -94,7 +103,6 @@ public class ImServerAutoConfigure {
 		long first = System.currentTimeMillis();
 		ApplicationContext applicationContext = new AnnotationConfigApplicationContext(ImServerAutoConfigure.class);
 		System.out.println("加载spring容器耗时：" + (System.currentTimeMillis() - first) + "ms");
-
 	}
 
 
