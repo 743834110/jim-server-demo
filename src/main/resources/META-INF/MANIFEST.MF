@@ -1,0 +1,47 @@
+Manifest-Version: 1.0
+Class-Path: tomcat-embed-el-8.5.34.jar tio-core-2.4.0.v20180508-RELEAS
+ E.jar commons-text-1.3.jar reactive-streams-1.0.2.jar jsoup-1.10.3.ja
+ r j2cache-core-2.3.21-release.jar mybatis-3.4.5.jar spring-boot-start
+ er-2.0.6.RELEASE.jar mybatis-spring-boot-starter-1.3.1.jar commons-fi
+ leupload-1.3.1.jar animal-sniffer-annotations-1.14.jar jodd-core-4.3.
+ 2.jar args4j-2.33.jar log4j-api-2.10.0.jar netty-codec-4.1.24.Final.j
+ ar netty-common-4.1.24.Final.jar validation-api-2.0.1.Final.jar sprin
+ g-core-5.0.10.RELEASE.jar javassist-3.21.0-GA.jar httpcore-4.0.1.jar 
+ logback-classic-1.2.3.jar slf4j-api-1.7.25.jar commons-logging-1.1.1.
+ jar spring-jcl-5.0.10.RELEASE.jar commons-pool2-2.3.jar spring-webmvc
+ -5.0.10.RELEASE.jar spring-boot-starter-logging-2.0.6.RELEASE.jar che
+ cker-compat-qual-2.0.0.jar spring-boot-starter-json-2.0.6.RELEASE.jar
+  tomcat-embed-core-8.5.34.jar jul-to-slf4j-1.7.25.jar spring-boot-sta
+ rter-web-2.0.6.RELEASE.jar jackson-databind-2.9.7.jar jedis-2.7.3.jar
+  commons-collections4-4.1.jar mybatis-spring-1.3.1.jar tomcat-embed-w
+ ebsocket-8.5.34.jar commons-io-2.5.jar netty-resolver-dns-4.1.24.Fina
+ l.jar spring-boot-autoconfigure-2.0.6.RELEASE.jar cglib-nodep-3.2.5.j
+ ar j2objc-annotations-1.1.jar commons-codec-1.3.jar reactor-core-3.1.
+ 7.RELEASE.jar hutool-all-4.0.10.jar netty-resolver-4.1.24.Final.jar c
+ ommons-compress-1.16.1.jar im-controller-spring-boot-starter-1.0-SNAP
+ SHOT.jar cache-api-1.0.0.jar httpclient-4.0.jar spring-boot-2.0.6.REL
+ EASE.jar fastjson-1.2.35.jar netty-transport-4.1.24.Final.jar config-
+ 1.3.1.jar yauaa-1.4.jar spring-tx-5.0.10.RELEASE.jar jim-common-2.3.0
+ .v20180830-RELEASE.jar jsr305-1.3.9.jar javax.annotation-api-1.3.2.ja
+ r spring-jdbc-5.0.10.RELEASE.jar jackson-datatype-jdk8-2.9.7.jar spri
+ ng-beans-5.0.10.RELEASE.jar netty-handler-4.1.24.Final.jar jackson-da
+ tatype-jsr310-2.9.7.jar logback-core-1.2.3.jar caffeine-2.6.2.jar spr
+ ing-boot-starter-tomcat-2.0.6.RELEASE.jar paranamer-2.5.2.jar jackson
+ -annotations-2.9.0.jar classmate-1.3.4.jar netty-buffer-4.1.24.Final.
+ jar spring-context-5.0.10.RELEASE.jar spring-web-5.0.10.RELEASE.jar s
+ pring-expression-5.0.10.RELEASE.jar jim-server-2.3.0.v20180830-RELEAS
+ E.jar jackson-dataformat-yaml-2.7.9.jar jodd-bean-3.7.1.jar jcl-over-
+ slf4j-1.7.25.jar jline-2.14.2.jar jboss-logging-3.3.2.Final.jar snake
+ yaml-1.19.jar fast-classpath-scanner-2.4.1.jar log4j-over-slf4j-1.7.2
+ 5.jar error_prone_annotations-2.1.3.jar objenesis-2.5.1.jar guava-25.
+ 0-jre.jar jackson-core-2.9.7.jar tio-utils-2.4.0.v20180508-RELEASE.ja
+ r im-db-spring-boot-starter-1.0-SNAPSHOT.jar mysql-connector-java-5.1
+ .6.jar logback-access-1.2.3.jar spring-boot-starter-jdbc-2.0.6.RELEAS
+ E.jar HikariCP-2.7.9.jar mybatis-spring-boot-autoconfigure-1.3.1.jar 
+ im-org-spring-boot-starter-1.0-SNAPSHOT.jar commons-lang3-3.5.jar byt
+ e-buddy-1.8.11.jar fst-2.57.jar log4j-to-slf4j-2.10.0.jar jfinal-3.2.
+ jar redisson-3.7.0.jar spring-aop-5.0.10.RELEASE.jar jackson-module-p
+ arameter-names-2.9.7.jar netty-codec-dns-4.1.24.Final.jar hibernate-v
+ alidator-6.0.13.Final.jar
+Main-Class: xyz.berby.im.server.ImServerAutoConfigure
+

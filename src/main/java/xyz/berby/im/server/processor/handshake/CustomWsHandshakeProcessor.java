@@ -3,29 +3,21 @@
  */
 package xyz.berby.im.server.processor.handshake;
 
-import cn.hutool.crypto.SecureUtil;
-import cn.hutool.http.HttpStatus;
-import com.jfinal.kit.PropKit;
-import org.apache.http.protocol.HTTP;
 import org.jim.common.ImAio;
 import org.jim.common.ImPacket;
 import org.jim.common.ImStatus;
-import org.jim.common.Protocol;
-import org.jim.common.http.HttpConst;
-import org.jim.common.http.HttpRequest;
-import org.jim.common.packets.*;
+import org.jim.common.packets.ChatBody;
+import org.jim.common.packets.Command;
+import org.jim.common.packets.RespBody;
 import org.jim.common.utils.ChatKit;
-import org.jim.common.utils.ImKit;
-import org.jim.common.utils.JsonKit;
-import org.jim.common.ws.WsSessionContext;
-import org.jim.server.ImServerGroupContext;
-import org.jim.server.command.CommandManager;
-import org.jim.server.command.handler.LoginReqHandler;
 import org.jim.server.command.handler.processor.handshake.WsHandshakeProcessor;
 import org.tio.core.ChannelContext;
+import xyz.berby.im.entity.ServerConfig;
 import xyz.berby.im.server.util.CustomKit;
+import xyz.berby.im.service.ServerConfigService;
+import xyz.berby.im.vo.Pager;
 
-import java.util.Date;
+import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,13 +30,22 @@ import java.util.Map;
  */
 public class CustomWsHandshakeProcessor extends WsHandshakeProcessor{
 
+	@Resource
+	private ServerConfigService serverConfigService;
+
+	private final static String PUBLIC_KEY_BASE64 = "publicKeyBase64";
 
 	@Override
 	public void onAfterHandshaked(ImPacket packet, ChannelContext channelContext) throws Exception {
 
-		Map<String, Object> data = new HashMap<>();
-		data.put("privateKeyBase64", "fffffffffffffffff");
-		ImPacket imPacket = CustomKit.sendHandShakeSuccessRespPacket(channelContext, data);
+		Pager<ServerConfig> pager = new Pager<>(new ServerConfig(PUBLIC_KEY_BASE64));
+		String value = this.serverConfigService
+				.queryByPager(pager).getResult().get(0).getMappingValue();
+		Map<String, Object> map = new HashMap<>();
+		map.put(PUBLIC_KEY_BASE64, value);
+
+		RespBody respBody = new RespBody(Command.COMMAND_HANDSHAKE_RESP, map);
+		ImPacket imPacket = new ImPacket(respBody.toByte());
 		ImAio.send(channelContext, imPacket);
 
 	}

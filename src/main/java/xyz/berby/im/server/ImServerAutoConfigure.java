@@ -3,8 +3,11 @@
  */
 package xyz.berby.im.server;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.ReflectUtil;
+import cn.hutool.core.util.ZipUtil;
 import com.jfinal.kit.JsonKit;
+import io.github.lukehutch.fastclasspathscanner.utils.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jim.common.Const;
 import org.jim.common.ImConfig;
@@ -18,13 +21,20 @@ import org.jim.server.listener.ImServerAioListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.server.WebServer;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
+import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.util.FileSystemUtils;
 import xyz.berby.im.ImDataBaseAutoConfigure;
 import xyz.berby.im.server.config.PropertyImConfigBuilder;
 import xyz.berby.im.server.listener.ImDemoGroupListener;
@@ -33,7 +43,12 @@ import com.jfinal.kit.PropKit;
 import xyz.berby.im.server.processor.handshake.CustomWsHandshakeProcessor;
 import xyz.berby.im.server.service.LoginServiceProcessor;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * IM服务端启动类;
@@ -54,9 +69,9 @@ public class ImServerAutoConfigure {
 		imConfig.setImGroupListener(new ImDemoGroupListener());
 		ImServerStarter imServerStarter = new ImServerStarter(imConfig, new ImServerAioListener(imConfig));
 		imServerStarter.start();
-
 		return imConfig;
 	}
+
 
 	/**
 	 * 登录细节处理类
@@ -97,12 +112,12 @@ public class ImServerAutoConfigure {
 		}
 	}
 
-
 	public static void main(String[] args)throws Exception{
 
 		long first = System.currentTimeMillis();
-		ApplicationContext applicationContext = new AnnotationConfigApplicationContext(ImServerAutoConfigure.class);
+		new SpringApplication(ImServerAutoConfigure.class).run(args);
 		System.out.println("加载spring容器耗时：" + (System.currentTimeMillis() - first) + "ms");
+
 	}
 
 

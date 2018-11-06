@@ -45,12 +45,19 @@
             <artifactId>spring-boot-autoconfigure</artifactId>
         </dependency>
 
+
         <!--junit-->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
 
+        <!--莫名错误，需要添加jackson依赖-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-json</artifactId>
+            <version>${spring.boot.version}</version>
+        </dependency>
 
     </dependencies>
     <build>
@@ -77,7 +84,7 @@
                     <archive>
                         <manifest>
                             <!-- 此处指定main方法入口的class -->
-                            <mainClass>xyz.berby.im.server.ImServerStart</mainClass>
+                            <mainClass>xyz.berby.im.server.ImServerAutoConfigure</mainClass>
                         </manifest>
                     </archive>
                     <skipAssembly>${skip.assembly}</skipAssembly>
@@ -88,6 +95,23 @@
                         <phase>package</phase>
                         <goals>
                             <goal>assembly</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!--spring boot自带打包插件-->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>xyz.berby.im.server.ImServerAutoConfigure</mainClass>
+                    <layout>ZIP</layout>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
                         </goals>
                     </execution>
                 </executions>
